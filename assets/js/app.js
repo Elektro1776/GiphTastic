@@ -8,8 +8,11 @@ $(document).ready(function() {
   function findImage(imageObject) {
     var imageUrlStill;
     var imageUrlMoving;
+    // var rating;
     let keys = Object.keys(imageObject);
+    // console.log(' IMAGE OBJECT', imageObject);
     keys.forEach(function(key) {
+      // rating = imageObject[key].rating
       if (key === 'original_still') {
         imageUrlStill = imageObject[key].url;
       }else if (key === 'original') {
@@ -20,13 +23,18 @@ $(document).ready(function() {
     return { imageUrlStill, imageUrlMoving };
   }
   // create our images with our click handlers to switch from the still image and moving image
-  function createImage(imgUrl) {
+  function createImage(imgUrl, rating) {
       var target = $('<div>');
       var img = $('<img>');
+      var ratingEl = $('<p>');
       target.addClass('col-lg-4 images');
       img.attr('src', imgUrl.imageUrlStill);
       img.css({ width: '100%' });
+      // img.append('<p>'+ rating + '</p>');
+      ratingEl.text(rating.toUpperCase());
       target.append(img);
+      target.append(ratingEl);
+      // target.append()
       target.on('click', function(e) {
         img.toggleClass('movingImage');
         if ($(img).hasClass('movingImage')) {
@@ -37,13 +45,13 @@ $(document).ready(function() {
       });
       return target;
   }
-  function fetchGiphs() {
+  function fetchGiphs(e) {
+    e.preventDefault();
     var imageContainer = $('#imageContainer');
-
     var imagesEl;
     searchParams = $(this).text();
-    searchUrl = `https://api.giphy.com/v1/gifs/search?q=${searchParams}&rating=pg&limit=10&api_key=${apiKey}`
-    imageContainer.html('')
+    searchUrl = `https://api.giphy.com/v1/gifs/search?q=${searchParams}&rating=pg&limit=10&api_key=${apiKey}`;
+    imageContainer.html('');
     $.ajax({
       url: searchUrl,
       method: 'GET',
@@ -54,15 +62,14 @@ $(document).ready(function() {
        keys.forEach(function(key) {
          var image;
          if(key === 'images' && key !== 'undefined') {
-          image = findImage(val[key]);
-          imagesEl = createImage(image);
+           console.log(' VALUE RATING', val.rating);
+          image = findImage(val[key],  val.rating);
+          imagesEl = createImage(image, val.rating);
           imageContainer.append(imagesEl);
          }
        });
      });
-   })
-
-  //  $('#science').html(div)
+   });
  }
   /** lets create our buttons on ready and set up our handler for each button to
   *   go poll the Giphy Api and get our images.
@@ -75,13 +82,15 @@ $(document).ready(function() {
     button.click(fetchGiphs);
     targetEl.append(button);
   });
+  // when we want to add add a new button
 function createNewButton(text) {
   var button = $('<button>');
   button.text(text);
   button.click(fetchGiphs);
   $('#giphButtons').append(button);
 }
-
+// capture our user input and create a new button out of it
+// and reset the form
 $('#inputTarget').submit(function(e) {
   e.preventDefault();
   let input = $('input[type=text][name=search]')

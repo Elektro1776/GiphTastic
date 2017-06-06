@@ -42,7 +42,7 @@ $(document).ready(function() {
 
     var imagesEl;
     searchParams = $(this).text();
-    searchUrl = `http://api.giphy.com/v1/gifs/search?q=${searchParams}&rating=pg&limit=10&api_key=${apiKey}`
+    searchUrl = `https://api.giphy.com/v1/gifs/search?q=${searchParams}&rating=pg&limit=10&api_key=${apiKey}`
     imageContainer.html('')
     $.ajax({
       url: searchUrl,
